@@ -1,0 +1,18 @@
+[package]
+name = "fast_obj_rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+cc = { version = "1.0.72" }
+
+[build-dependencies.bindgen]
+version = "0.59.2"
+optional = true
+
+[features]
+generate_bindings=["bindgen"]
