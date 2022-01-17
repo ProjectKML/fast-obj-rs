@@ -2,7 +2,7 @@
 extern crate bindgen;
 extern crate cc;
 
-use std::{env, fs, path::Path};
+use std::env;
 
 fn main() {
     let mut build = cc::Build::new();
