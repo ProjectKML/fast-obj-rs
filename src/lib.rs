@@ -4,18 +4,23 @@ use std::{
     path::Path,
     slice, str
 };
+use std::error::Error;
+use std::fmt::{Display};
 
 use libc::{c_void, strlen};
+use enum_display_derive::Display;
 
 use crate::ObjLoadError::InvalidPath;
 
 mod ffi;
 
-#[derive(Debug)]
+#[derive(Debug, Display)]
 pub enum ObjLoadError {
     InvalidPath,
     ParsingFailed
 }
+
+impl Error for ObjLoadError {}
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
