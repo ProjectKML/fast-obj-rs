@@ -137,7 +137,7 @@ impl Mesh {
     }
 
     pub fn positions(&self) -> &[f32] {
-        unsafe { slice::from_raw_parts((*self.mesh).positions, (*self.mesh).position_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).positions, 3 * (*self.mesh).position_count as usize) }
     }
 
     pub fn texcoords(&self) -> &[f32] {
@@ -149,7 +149,7 @@ impl Mesh {
     }
 
     pub fn face_vertices(&self) -> &[u32] {
-        unsafe { slice::from_raw_parts((*self.mesh).face_vertices, 3 * (*self.mesh).face_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).face_vertices, (*self.mesh).face_count as usize) }
     }
 
     pub fn face_materials(&self) -> &[u32] {
