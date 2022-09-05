@@ -141,15 +141,15 @@ impl Mesh {
     }
 
     pub fn texcoords(&self) -> &[f32] {
-        unsafe { slice::from_raw_parts((*self.mesh).texcoords, (*self.mesh).texcoord_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).texcoords, 2 * (*self.mesh).texcoord_count as usize) }
     }
 
     pub fn normals(&self) -> &[f32] {
-        unsafe { slice::from_raw_parts((*self.mesh).normals, (*self.mesh).normal_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).normals, 3 * (*self.mesh).normal_count as usize) }
     }
 
     pub fn face_vertices(&self) -> &[u32] {
-        unsafe { slice::from_raw_parts((*self.mesh).face_vertices, (*self.mesh).face_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).face_vertices, 3 * (*self.mesh).face_count as usize) }
     }
 
     pub fn face_materials(&self) -> &[u32] {
