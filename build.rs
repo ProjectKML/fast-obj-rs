@@ -1,8 +1,6 @@
 #[cfg(feature = "generate_bindings")]
-extern crate bindgen;
-extern crate cc;
-
 use std::env;
+use std::{fs, path::Path};
 
 fn main() {
     let mut build = cc::Build::new();

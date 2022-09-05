@@ -1,14 +1,14 @@
 use std::{
+    error::Error,
     ffi::{CString, NulError},
+    fmt::Display,
     os::raw::c_char,
     path::Path,
     slice, str
 };
-use std::error::Error;
-use std::fmt::{Display};
 
-use libc::{c_void, strlen};
 use enum_display_derive::Display;
+use libc::{c_void, strlen};
 
 use crate::ObjLoadError::InvalidPath;
 
@@ -157,7 +157,7 @@ impl Mesh {
     }
 
     pub fn indices(&self) -> &[Index] {
-        unsafe { slice::from_raw_parts((*self.mesh).indices as *mut Index, (*self.mesh).face_count as usize) }
+        unsafe { slice::from_raw_parts((*self.mesh).indices as *mut Index, (*self.mesh).index_count as usize) }
     }
 
     pub fn materials(&self) -> &[Material] {
