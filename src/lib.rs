@@ -113,7 +113,7 @@ pub struct Mesh {
 impl Mesh {
     pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, ObjLoadError> {
         unsafe {
-            let path_string = CString::new(path.as_ref().file_name().ok_or(ObjLoadError::InvalidPath)?.to_str().ok_or(ObjLoadError::InvalidPath)?)?;
+            let path_string = CString::new(path.as_ref().to_str().ok_or(ObjLoadError::InvalidPath)?)?;
 
             let mesh = ffi::fast_obj_read(path_string.as_ptr());
             if mesh == std::ptr::null_mut() {
@@ -125,7 +125,7 @@ impl Mesh {
     }
 
     pub unsafe fn new_with_callbacks<P: AsRef<Path>>(path: P, callbacks: &Callbacks, user_data: *mut c_void) -> Result<Self, ObjLoadError> {
-        let path_string = CString::new(path.as_ref().file_name().ok_or(ObjLoadError::InvalidPath)?.to_str().ok_or(ObjLoadError::InvalidPath)?)?;
+        let path_string = CString::new(path.as_ref().to_str().ok_or(ObjLoadError::InvalidPath)?)?;
 
         let mesh = ffi::fast_obj_read_with_callbacks(path_string.as_ptr(), callbacks as *const Callbacks, user_data);
 

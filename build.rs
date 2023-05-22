@@ -1,4 +1,6 @@
-use std::{env, fs, path::Path};
+use std::env;
+#[cfg(feature = "generate_bindings")]
+use std::{fs, path::Path};
 
 fn main() {
     let mut build = cc::Build::new();
