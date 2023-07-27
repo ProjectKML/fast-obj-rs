@@ -1,10 +1,12 @@
+extern crate core;
+
 use std::{
     error::Error,
     ffi::{CString, NulError},
     fmt::Display,
-    os::raw::c_char,
+    os::raw::{c_char, c_ulong},
     path::Path,
-    slice, str
+    ptr, slice, str
 };
 
 use enum_display_derive::Display;
@@ -116,7 +118,7 @@ impl Mesh {
             let path_string = CString::new(path.as_ref().to_str().ok_or(ObjLoadError::InvalidPath)?)?;
 
             let mesh = ffi::fast_obj_read(path_string.as_ptr());
-            if mesh == std::ptr::null_mut() {
+            if mesh.is_null() {
                 Err(ObjLoadError::ParsingFailed)
             } else {
                 Ok(Self { mesh })
@@ -124,12 +126,48 @@ impl Mesh {
         }
     }
 
+    pub fn new_from_bytes(bytes: &[u8]) -> Result<Self, ObjLoadError> {
+        struct UserData<'a> {
+            bytes: &'a [u8],
+            read_offset: usize
+        }
+
+        let mut user_data = UserData { bytes, read_offset: 0 };
+
+        unsafe extern "C" fn file_open(_path: *const c_char, _user_data: *mut c_void) -> *mut c_void {
+            ptr::null_mut()
+        }
+
+        unsafe extern "C" fn file_close(_file: *mut c_void, _user_data: *mut c_void) {}
+
+        unsafe extern "C" fn file_read(_file: *mut c_void, dst: *mut c_void, bytes: u32, user_data: *mut c_void) -> u32 {
+            let user_data = &mut *{ user_data as *mut UserData };
+            libc::memcpy(dst, user_data.bytes.as_ptr().add(user_data.read_offset).cast(), bytes as _);
+            user_data.read_offset += bytes as usize;
+            bytes as _
+        }
+
+        unsafe extern "C" fn file_size(_file: *mut c_void, user_data: *mut c_void) -> c_ulong {
+            let user_data = &mut *{ user_data as *mut UserData };
+            user_data.bytes.len() as _
+        }
+
+        let callbacks = Callbacks {
+            file_open: Some(file_open),
+            file_close: Some(file_close),
+            file_read: Some(file_read),
+            file_size: Some(file_size)
+        };
+
+        unsafe { Self::new_with_callbacks("", &callbacks, &mut user_data as *mut _ as *mut _) }
+    }
+
     pub unsafe fn new_with_callbacks<P: AsRef<Path>>(path: P, callbacks: &Callbacks, user_data: *mut c_void) -> Result<Self, ObjLoadError> {
         let path_string = CString::new(path.as_ref().to_str().ok_or(ObjLoadError::InvalidPath)?)?;
 
         let mesh = ffi::fast_obj_read_with_callbacks(path_string.as_ptr(), callbacks as *const Callbacks, user_data);
 
-        if mesh == std::ptr::null_mut() {
+        if mesh.is_null() {
             Err(ObjLoadError::ParsingFailed)
         } else {
             Ok(Self { mesh })
