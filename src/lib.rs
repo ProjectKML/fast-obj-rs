@@ -149,7 +149,7 @@ impl Mesh {
 
         unsafe extern "C" fn file_size(_file: *mut c_void, user_data: *mut c_void) -> c_ulong {
             let user_data = &mut *{ user_data as *mut UserData };
-            user_data.bytes.len() as _
+            (user_data.bytes.len() - user_data.read_offset) as _
         }
 
         let callbacks = Callbacks {
