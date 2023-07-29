@@ -135,7 +135,7 @@ impl Mesh {
         let mut user_data = UserData { bytes, read_offset: 0 };
 
         unsafe extern "C" fn file_open(_path: *const c_char, _user_data: *mut c_void) -> *mut c_void {
-            ptr::null_mut()
+            _user_data
         }
 
         unsafe extern "C" fn file_close(_file: *mut c_void, _user_data: *mut c_void) {}
@@ -149,7 +149,7 @@ impl Mesh {
 
         unsafe extern "C" fn file_size(_file: *mut c_void, user_data: *mut c_void) -> c_ulong {
             let user_data = &mut *{ user_data as *mut UserData };
-            (user_data.bytes.len() - user_data.read_offset) as _
+            user_data.bytes.len() as _
         }
 
         let callbacks = Callbacks {
