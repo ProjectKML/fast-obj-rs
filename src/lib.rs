@@ -12,7 +12,7 @@ use std::{
 use enum_display_derive::Display;
 use libc::{c_void, strlen};
 
-use crate::ObjLoadError::InvalidPath;
+use crate::{ffi::size_t, ObjLoadError::InvalidPath};
 
 mod ffi;
 
@@ -140,7 +140,7 @@ impl Mesh {
 
         unsafe extern "C" fn file_close(_file: *mut c_void, _user_data: *mut c_void) {}
 
-        unsafe extern "C" fn file_read(_file: *mut c_void, dst: *mut c_void, bytes: u32, user_data: *mut c_void) -> u32 {
+        unsafe extern "C" fn file_read(_file: *mut c_void, dst: *mut c_void, bytes: size_t, user_data: *mut c_void) -> u32 {
             let user_data = &mut *{ user_data as *mut UserData };
             libc::memcpy(dst, user_data.bytes.as_ptr().add(user_data.read_offset).cast(), bytes as _);
             user_data.read_offset += bytes as usize;
